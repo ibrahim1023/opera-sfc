@@ -1,7 +1,7 @@
 const {
     BN,
     expectRevert,
-} = require('openzeppelin-test-helpers');
+} = require('@openzeppelin/test-helpers');
 const chai = require('chai');
 const { expect } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -337,7 +337,7 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator]) => {
                 await expect(this.sfc.createValidator(pubkey, {
                     from: secondValidator,
                     value: amount18('0.3'),
-                })).to.be.rejectedWith('Returned error: VM Exception while processing transaction: revert insufficient self-stake -- Reason given: insufficient self-stake.');
+                })).to.be.rejectedWith('insufficient self-stake');
             });
 
             it('Returns current Epoch', async () => {
@@ -349,12 +349,12 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator]) => {
             });
 
             it('Should return Now()', async () => {
-                const now = Math.trunc((Date.now()) / 1000);
+                const now = (await web3.eth.getBlock('latest')).timestamp;
                 expect((await this.sfc.getBlockTime()).toNumber()).to.be.within(now - 100, now + 100);
             });
 
             it('Should return getTime()', async () => {
-                const now = Math.trunc((Date.now()) / 1000);
+                const now = (await web3.eth.getBlock('latest')).timestamp;
                 expect((await this.sfc.getTime()).toNumber()).to.be.within(now - 100, now + 100);
             });
         });
@@ -470,7 +470,7 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, firstDe
             await expect(this.sfc.delegate(1, {
                 from: firstDelegator,
                 value: amount18('10'),
-            })).to.be.rejectedWith('Returned error: VM Exception while processing transaction: revert validator doesn\'t exist -- Reason given: validator doesn\'t exist');
+            })).to.be.rejectedWith('validator doesn\'t exist');
             await expect(this.sfc.createValidator(pubkey, {
                 from: firstValidator,
                 value: amount18('10'),
@@ -479,7 +479,7 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, firstDe
             await expect(this.sfc.delegate(2, {
                 from: secondDelegator,
                 value: amount18('10'),
-            })).to.be.rejectedWith('Returned error: VM Exception while processing transaction: revert validator doesn\'t exist -- Reason given: validator doesn\'t exist');
+            })).to.be.rejectedWith('validator doesn\'t exist');
             await expect(this.sfc.createValidator(pubkey, {
                 from: secondValidator,
                 value: amount18('15'),
@@ -488,7 +488,7 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, firstDe
             await expect(this.sfc.delegate(3, {
                 from: thirdDelegator,
                 value: amount18('10'),
-            })).to.be.rejectedWith('Returned error: VM Exception while processing transaction: revert validator doesn\'t exist -- Reason given: validator doesn\'t exist');
+            })).to.be.rejectedWith('validator doesn\'t exist');
             await expect(this.sfc.createValidator(pubkey, {
                 from: thirdValidator,
                 value: amount18('20'),
@@ -616,7 +616,7 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, firstDe
         });
 
         it('Should returns Validator\'s Created Time', async () => {
-            const now = Math.trunc((Date.now()) / 1000);
+            const now = (await web3.eth.getBlock('latest')).timestamp;
             expect(validator.createdTime.toNumber()).to.be.within(now - 5, now + 5);
         });
 
